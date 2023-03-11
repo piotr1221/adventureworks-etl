@@ -1,4 +1,4 @@
-package layers.landing.process
+package layers.landing.process.extraction
 
 import org.apache.spark.sql.Encoder
 import org.apache.spark.sql.types.StructType
