@@ -1,30 +1,23 @@
 package datacleaner
 
-import adventureworks.layers.landing.datacleaner.AddressDataCleaner
+import common.Orchestrator
+import datacleaner.DataCleanerOrchestrator.parquetSource
 import org.apache.spark.sql.SparkSession
-import sources.parquet.{ParquetDataMetadata, ParquetSource}
-import sources.Landing
+import sources.parquet.ParquetSource
+import sources.{DataUnit, Landing}
 
-class DataCleanerOrchestrator(spark: SparkSession, dataCleaners: Array[DataCleaner]) { //extends Orchestrator {
-  val parquetSource: ParquetSource = new ParquetSource(spark)
-
-  def start(parquetDataMetadataArray: Array[ParquetDataMetadata]): Unit = {
-    for (parquetDataMetadata <- parquetDataMetadataArray) {
-      val dataCleaner = getDataCleaner(parquetDataMetadata.fileName)
-      val df = dataCleaner.clean(parquetSource.read(parquetDataMetadata))
-      parquetSource.writeParquet(df, parquetDataMetadata.toParquetSourceMetadata(Landing))
-    }
-
-//    for (dataCleaner <- dataCleaners) {
-//      val df = dataCleaner.clean()
-//      parquetSource.writeParquet(df, parquetSource.getParquetSourceMetadata(parquetSource.inputFile(df), Landing))
-//    }
+class DataCleanerOrchestrator extends Orchestrator {
+  def start(spark: SparkSession, dataUnits: Array[DataUnit]): Unit = {
+    dataUnits.foreach(dataUnit => {
+      dataUnit.dataCleaner match {
+        case Some(dataCleaner: DataCleaner) =>
+          val cleanedDf = dataCleaner.clean(parquetSource.read(spark, dataUnit))
+          parquetSource.writeParquet(cleanedDf, dataUnit.toParquetDataUnit(Landing))
+      }
+    })
   }
+}
 
-  private def getDataCleaner(name: String): DataCleaner = {
-    name match {
-      case "address" => AddressDataCleaner
-    }
-  }
-
+object DataCleanerOrchestrator {
+  val parquetSource: ParquetSource.type = ParquetSource
 }

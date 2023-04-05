@@ -1,19 +1,21 @@
 package sources.parquet
 
 import org.apache.spark.sql.{DataFrame, SparkSession}
-import sources.{DataSource, DataMetadata}
+import sources.{DataSource, DataUnit}
 
-class ParquetSource(spark: SparkSession) extends DataSource(spark) {
+object ParquetSource extends DataSource {
   private val inputFileNameRegex = "([^/]+.parquet)".r
 
-  def read(parquetSourceMetadata: DataMetadata): DataFrame = {
-    val tableMetadata = parquetSourceMetadata.asInstanceOf[ParquetDataMetadata]
+  override def read(spark: SparkSession, parquetDataUnit: DataUnit): DataFrame = {
+    val dataUnit: ParquetDataUnit = parquetDataUnit match {
+      case p: ParquetDataUnit => p
+      case _ => parquetDataUnit.toParquetDataUnit()
+    }
     spark.read
-      .parquet(tableMetadata.qualifiedName)
+      .parquet(dataUnit.qualifiedName)
   }
 
-    def inputFile(df: DataFrame): String = {
+  def inputFile(df: DataFrame): String = {
       inputFileNameRegex.findFirstIn(df.inputFiles(0)).get
     }
-
 }

@@ -1,22 +1,32 @@
 package sources
 
+import common.SourceUnit
 import org.apache.spark.sql.{DataFrame, SaveMode, SparkSession}
-import sources.parquet.ParquetDataMetadata
 
-abstract class DataSource(
-    spark: SparkSession
-) extends ParquetWritable {
+abstract class DataSource extends TableReader with ParquetWriter {
 
-    def read(tableMetadata: DataMetadata): DataFrame
+    def read(spark: SparkSession, dataUnit: DataUnit): DataFrame
 
-    def getParquetSourceMetadata(fileName: String, layer: DataLakeLayer) = {
-        ParquetDataMetadata(layer.path, fileName)
-    }
-
-    override def writeParquet(df: DataFrame, parquetSourceMetadata: ParquetDataMetadata, saveMode: SaveMode = SaveMode.Overwrite): Unit = {
+    override def writeParquet(df: DataFrame,
+                              dataUnit: DataUnit,
+                              saveMode: SaveMode = SaveMode.Overwrite): Unit = {
         df.write
           .format("parquet")
           .mode(saveMode)
-          .save(parquetSourceMetadata.qualifiedName)
+          .save(
+              dataUnit.qualifiedName
+          )
+    }
+
+    def readAndWriteInBulk(spark: SparkSession, dataUnits: Array[DataUnit]): Unit = {
+        for (dataUnit <- dataUnits) {
+            println ("/\\" * 50)
+            println ("::::::::::::::::::::: " + dataUnit.qualifiedName + " :::::::::::::::::::::")
+
+            val df = read(spark, dataUnit)
+            writeParquet(df, dataUnit.toParquetDataUnit())
+
+            println("-*" * 50)
+        }
     }
 }
