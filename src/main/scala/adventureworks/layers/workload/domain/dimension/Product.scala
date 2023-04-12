@@ -4,7 +4,8 @@ import java.sql.Timestamp
 import org.apache.spark.sql.Encoders
 import org.apache.spark.sql.types._
 
-// This case class shouldn't be used as encoder
+// This case class shouldn't be used as encoder becase
+// it can't recognize the field `class`
 final case class Product(
     productid: Long,
     name: String,
@@ -36,6 +37,7 @@ final case class Product(
 
 object Product {
     def schema: StructType = {
+        // it fails with this line
         // Encoders.product[Product].schema
 
         /* It's necessary to use a StructType to avoid problems with

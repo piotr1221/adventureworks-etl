@@ -1,6 +1,5 @@
 package sources
 
-import common.SourceUnit
 import org.apache.spark.sql.{DataFrame, SaveMode, SparkSession}
 
 abstract class DataSource extends TableReader with ParquetWriter {

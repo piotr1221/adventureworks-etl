@@ -1,6 +1,7 @@
 import adventureworks.AdventureWorks
 import org.apache.spark.sql.SparkSession
 import common.PipelineOrchestrator
+import common.curated.{CustomerDataIntegrator, ProductDataIntegrator, SalesFactDataIntegrator, SalesPersonDataIntegrator}
 import sources.DataUnit
 import sources.parquet.ParquetDataUnit
 
@@ -10,8 +11,16 @@ object Main {
       .sparkSession(sparkSession)
       .build()
 
+    val dataIntegrators = Vector(
+//      new SalesFactDataIntegrator(),
+//      new CustomerDataIntegrator(),
+//      new SalesPersonDataIntegrator(),
+      new ProductDataIntegrator()
+    )
+
     pipelineOrchestrator.start(
-      Array(AdventureWorks.setup())
+      Array(AdventureWorks.setup()),
+      dataIntegrators
     )
 
   }

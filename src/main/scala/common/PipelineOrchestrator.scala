@@ -10,15 +10,15 @@ class PipelineOrchestrator {
   private var dataSourceOrchestrators: Array[DataSourceOrchestrator] = _
   private var dataCleanerOrchestrators: Array[DataCleanerOrchestrator] = _
 
-  def start(sourceUnits: Array[SourceUnit]): Unit = {
-    workload(sourceUnits)
-    landing(sourceUnits)
-    val salesFactDataIntegrator = new SalesFactDataIntegrator()
-    salesFactDataIntegrator.integrate(spark)
+  def start(sourceUnits: Array[SourceUnit], dataIntegrators: Vector[DataIntegrator]): Unit = {
+//    workload(sourceUnits)
+//    landing(sourceUnits)
+    curated(dataIntegrators)
   }
 
   private def workload(sourceUnits: Array[SourceUnit]): Unit = sourceUnits.foreach(_.extractDataFromSources(spark))
   private def landing(sourceUnits: Array[SourceUnit]): Unit = sourceUnits.foreach(_.cleanData(spark))
+  private def curated(dataIntegrators: Vector[DataIntegrator]): Unit = dataIntegrators.foreach(_.integrate(spark))
 
   /* Setters for ETLOrchestratorBuilder */
   protected def setSpark(spark: SparkSession): Unit = this.spark = spark
