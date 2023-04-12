@@ -39,7 +39,7 @@ object AdventureWorks {
   )
 
   private def dataUnit = {
-    Array[DataUnit](
+    Vector[DataUnit](
       PostgresDataUnit(project, "person", "address", Option(Address.schema), Option(AddressDataCleaner)),
       PostgresDataUnit(project, "person", "countryregion", Option(CountryRegion.schema), Option(CountryRegionDataCleaner)),
       PostgresDataUnit(project, "sales", "customer", Option(Customer.schema), Option(CustomerDataCleaner)),

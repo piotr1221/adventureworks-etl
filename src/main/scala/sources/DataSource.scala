@@ -17,7 +17,7 @@ abstract class DataSource extends TableReader with ParquetWriter {
           )
     }
 
-    def readAndWriteInBulk(spark: SparkSession, dataUnits: Array[DataUnit]): Unit = {
+    def readAndWriteInBulk(spark: SparkSession, dataUnits: Vector[DataUnit]): Unit = {
         for (dataUnit <- dataUnits) {
             println ("/\\" * 50)
             println ("::::::::::::::::::::: " + dataUnit.qualifiedName + " :::::::::::::::::::::")

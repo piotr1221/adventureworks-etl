@@ -1,30 +1,30 @@
 package common
 
-import common.curated.SalesFactDataIntegrator
-import datacleaner.{DataCleaner, DataCleanerOrchestrator}
 import org.apache.spark.sql.SparkSession
-import sources.{DataSource, DataSourceOrchestrator}
+import sources.DataSourceOrchestrator
+import datacleaner.DataCleanerOrchestrator
+
 
 class PipelineOrchestrator {
   private var spark: SparkSession = _
-  private var dataSourceOrchestrators: Array[DataSourceOrchestrator] = _
-  private var dataCleanerOrchestrators: Array[DataCleanerOrchestrator] = _
+  private var dataSourceOrchestrators: Vector[DataSourceOrchestrator] = _
+  private var dataCleanerOrchestrators: Vector[DataCleanerOrchestrator] = _
 
-  def start(sourceUnits: Array[SourceUnit], dataIntegrators: Vector[DataIntegrator]): Unit = {
-//    workload(sourceUnits)
-//    landing(sourceUnits)
+  def start(sourceUnits: Vector[SourceUnit], dataIntegrators: Vector[DataIntegrator]): Unit = {
+    workload(sourceUnits)
+    landing(sourceUnits)
     curated(dataIntegrators)
   }
 
-  private def workload(sourceUnits: Array[SourceUnit]): Unit = sourceUnits.foreach(_.extractDataFromSources(spark))
-  private def landing(sourceUnits: Array[SourceUnit]): Unit = sourceUnits.foreach(_.cleanData(spark))
+  private def workload(sourceUnits: Vector[SourceUnit]): Unit = sourceUnits.foreach(_.extractDataFromSources(spark))
+  private def landing(sourceUnits: Vector[SourceUnit]): Unit = sourceUnits.foreach(_.cleanData(spark))
   private def curated(dataIntegrators: Vector[DataIntegrator]): Unit = dataIntegrators.foreach(_.integrate(spark))
 
   /* Setters for ETLOrchestratorBuilder */
   protected def setSpark(spark: SparkSession): Unit = this.spark = spark
-  protected def setDataSourceOrchestrators(dataSourceOrchestrators: Array[DataSourceOrchestrator]): Unit =
+  protected def setDataSourceOrchestrators(dataSourceOrchestrators: Vector[DataSourceOrchestrator]): Unit =
     this.dataSourceOrchestrators = dataSourceOrchestrators
-  protected def setDataCleanerOrchestrators(dataCleanerOrchestrators: Array[DataCleanerOrchestrator]): Unit =
+  protected def setDataCleanerOrchestrators(dataCleanerOrchestrators: Vector[DataCleanerOrchestrator]): Unit =
     this.dataCleanerOrchestrators = dataCleanerOrchestrators
 
 }
@@ -40,12 +40,12 @@ object PipelineOrchestrator {
       this
     }
 
-    def dataSourceOrchestrators(dataSourceOrchestrators: Array[DataSourceOrchestrator]): ETLOrchestratorBuilder = {
+    def dataSourceOrchestrators(dataSourceOrchestrators: Vector[DataSourceOrchestrator]): ETLOrchestratorBuilder = {
       etlOrchestrator.setDataSourceOrchestrators(dataSourceOrchestrators)
       this
     }
 
-    def dataCleanerOrchestrators(dataCleanerOrchestrators: Array[DataCleanerOrchestrator]): ETLOrchestratorBuilder = {
+    def dataCleanerOrchestrators(dataCleanerOrchestrators: Vector[DataCleanerOrchestrator]): ETLOrchestratorBuilder = {
       etlOrchestrator.setDataCleanerOrchestrators(dataCleanerOrchestrators)
       this
     }

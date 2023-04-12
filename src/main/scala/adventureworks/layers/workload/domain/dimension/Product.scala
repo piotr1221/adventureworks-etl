@@ -42,7 +42,7 @@ object Product {
 
         /* It's necessary to use a StructType to avoid problems with
         the *class* field */
-        StructType(Array(
+        StructType(Vector(
             StructField("productid", IntegerType, true),
             StructField("name", StringType, true),
             StructField("productnumber", StringType, true),

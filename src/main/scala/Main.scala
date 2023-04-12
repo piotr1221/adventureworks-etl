@@ -1,9 +1,7 @@
 import adventureworks.AdventureWorks
 import org.apache.spark.sql.SparkSession
 import common.PipelineOrchestrator
-import common.curated.{CustomerDataIntegrator, ProductDataIntegrator, SalesFactDataIntegrator, SalesPersonDataIntegrator}
-import sources.DataUnit
-import sources.parquet.ParquetDataUnit
+import common.curated.DataIntegratorSetup
 
 object Main {  
   def main(args: Array[String]): Unit = {
@@ -11,16 +9,9 @@ object Main {
       .sparkSession(sparkSession)
       .build()
 
-    val dataIntegrators = Vector(
-//      new SalesFactDataIntegrator(),
-//      new CustomerDataIntegrator(),
-//      new SalesPersonDataIntegrator(),
-      new ProductDataIntegrator()
-    )
-
     pipelineOrchestrator.start(
-      Array(AdventureWorks.setup()),
-      dataIntegrators
+      Vector(AdventureWorks.setup()),
+      DataIntegratorSetup.setup
     )
 
   }
@@ -30,9 +21,4 @@ object Main {
       .appName("AdventureWorks ETL")
       .getOrCreate()
   }
-
-  def sourceMetadataToParquet(dataMetadataArray: Array[DataUnit]): Array[ParquetDataUnit] = {
-    dataMetadataArray.map(_.toParquetDataUnit())
-  }
-
 }

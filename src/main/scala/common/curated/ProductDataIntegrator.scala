@@ -19,9 +19,7 @@ class ProductDataIntegrator extends DataIntegrator {
       "safetystocklevel", "reorderpoint", "standardcost", "listprice", "size", "sizeunitmeasurecode", "weight",
       "weightunitmeasurecode", "daystomanufacture", "productline", "class", "style", "sellstartdate", "sellenddate",
       "discontinueddate").map(column => s"p.${column}").mkString(",\n" + (" " * 3))
-
-    // add productmodel
-
+    
     val denormalizedProductQuery =
       s"""
         | SELECT

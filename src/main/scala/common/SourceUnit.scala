@@ -7,7 +7,7 @@ import sources.{DataSource, DataSourceOrchestrator, DataUnit, Landing}
 
 class SourceUnit(
   val dataSource: DataSource,
-  val dataUnits: Array[DataUnit],
+  val dataUnits: Vector[DataUnit],
   val orchestrators: Map[OrchestratorEnum.Value, _ <: Orchestrator]
 ) {
   def extractDataFromSources(spark: SparkSession): Unit = {
